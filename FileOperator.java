@@ -9,7 +9,7 @@ public class FileOperator {
     /*
     * Creates the File and Scanner to read the specified filename
     */
-    public static void   createFile(String filename)){
+    public static void   createFile(String filename){
         myFile = new File(filename);
         try {
             fileReader = new Scanner(myFile);
