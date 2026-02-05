@@ -1,104 +1,114 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+
 public class ArticleAnalyzer {
-    private ArrayList<String> stopWords;
-    private ArrayList<String> headlines;
-    private ArrayList<String> descriptions;
-    private ArrayList<String> categories;
-    
-    public ArticleAnalyzer() {
-        stopWords = FileOperator.getStringList("stopwords.txt");
-        System.out.println("Stop words count: " + stopWords.size());
-        headlines = new ArrayList<>();
-        descriptions = new ArrayList<>();
-        categories = new ArrayList<>();
-        System.out.println("Articles count: " + headlines.size());
+
+    private ArrayList<String> stopWords; //load from FileOperators
+    private ArrayList<Article> articles; //load from FileOperators json 
+
+    public ArticleAnalyzer(){
+        stopWords=FileOperator.getStringList("stopwords.txt");
+        System.out.println("Stop Word count"+stopWords.size());
+        articles=new ArrayList<>();
+        System.out.println("Articles count"+articles.size());
+
+
+
     }
-    
     public static void main(String[] args) {
-        ArticleAnalyzer analyzer = new ArticleAnalyzer();
-        ArrayList<String> articleLines = FileOperator.getStringList("News_Category_Dataset_v3.json");
-        for (String line : articleLines) {
-            analyzer.parseJson(line);
+        ArticleAnalyzer Kowin = new ArticleAnalyzer();
+        ArrayList<String> sentimentLines = FileOperator.getStringList("sentiments.txt");
+        Pattern pattern = Pattern.compile("([a-zA-Z0-9]+),(-?\\d+\\.\\d+)");
+        ArrayList<String> words = new ArrayList<>();
+        ArrayList<Double> values = new ArrayList<>();
+        for (String line : sentimentLines) {
+            Matcher matcher = pattern.matcher(line);
+            while (matcher.find()) {
+                String word = matcher.group(1);  // Extract word
+                Double value = Double.parseDouble(matcher.group(2)); // Extract decimal value
+                
+                words.add(word);
+                values.add(value);
+            }
         }
+        for (int i = 0; i < words.size(); i++) {
+            System.out.println("Word: " + words.get(i) + ", Value: " + values.get(i));
+        }
+
+    //    ArticleAnalyzer riano = new ArticleAnalyzer();
+    //    ArrayList<String> lines= FileOperator.getStringList("data.txt");
+    //     for(String line : lines){
+    
+    //    Article a=riano.parseJson(line);
+    //    String clean = riano.removeStopWords(a.getDescription());
+    //    a.setDescription(clean);
+    //    System.out.println(a);
+    //     riano.addArticle(a);
+    //     }
+
+       
+
+
+    }
+
+    public void addStopWord(String word){
+
+    }
+
+    public void addArticle(Article article){
+
+    }
+
+    public Article parseJson(String jsonLine){
+ 
+        Article result;
+        Pattern l = Pattern.compile("\"link\":\\s*\"([^\"]+)\"");  //regex to extract words
+        Matcher lm =l.matcher(jsonLine); //parameter - line of text
+        String lt = lm.find() ? lm.group(1) : ""; //extract the destined part
+
         
-        System.out.println("Articles count after loading: " + analyzer.headlines.size());
-        for (int i = 0; i < analyzer.descriptions.size(); i++) {
-            String cleanedDescription = analyzer.removeStopWords(analyzer.descriptions.get(i));
-            analyzer.descriptions.set(i, cleanedDescription);
-        }
-        for (int i = 0; i < analyzer.headlines.size(); i++) {
-            System.out.println("Headline: " + analyzer.headlines.get(i));
-            System.out.println("Description: " + analyzer.descriptions.get(i));
-            System.out.println("---");
-        }
-    }
-    
-    public void parseJson(String jsonLine) {
-        try {
-            Pattern headlinePattern = Pattern.compile("\"headline\"\\s*:\\s*\"([^\"]+)\"");
-            Matcher headlineMatcher = headlinePattern.matcher(jsonLine);
-            Pattern descPattern = Pattern.compile("\"short_description\"\\s*:\\s*\"([^\"]+)\"");
-            Matcher descMatcher = descPattern.matcher(jsonLine);
-            Pattern categoryPattern = Pattern.compile("\"category\"\\s*:\\s*\"([^\"]+)\"");
-            Matcher categoryMatcher = categoryPattern.matcher(jsonLine);
-            
-            String headline = "";
-            String description = "";
-            String category = "";
-            
-            if (headlineMatcher.find()) {
-                headline = headlineMatcher.group(1);
-            }
-            
-            if (descMatcher.find()) {
-                description = descMatcher.group(1);
-            }
-            
-            if (categoryMatcher.find()) {
-                category = categoryMatcher.group(1);
-            }
-            addArticle(headline, description, category);
-            
-        } catch (Exception e) {
-            System.err.println("Error parsing JSON line: " + e.getMessage());
-        }
-    }
-    
-    public void addArticle(String headline, String description, String category) {
-        headlines.add(headline);
-        descriptions.add(description);
-        categories.add(category);
-    }
-    
-    public void addStopWord(String word) {
-        if (word != null && !word.isEmpty() && !stopWords.contains(word.toLowerCase())) {
-            stopWords.add(word.toLowerCase());
-        }
-    }
-    
-    public String removeStopWords(String text) {
-        if (text == null || text.isEmpty()) {
-            return text;
-        }
+        Pattern h = Pattern.compile("\"headline\":\\s*\"([^\"]+)\"");  //regex to extract words
+        Matcher hm =l.matcher(jsonLine); //parameter - line of text
+        String ht = lm.find() ? lm.group(1) : ""; //extract the destined part
         
-        String result = text;
+        Pattern c = Pattern.compile("\"category\":\\s*\"([^\"]+)\"");  //regex to extract words
+        Matcher cm =l.matcher(jsonLine); //parameter - line of text
+        String ct = lm.find() ? lm.group(1) : ""; //extract the destined part
+
+        Pattern d = Pattern.compile("\"short_description\":\\s*\"([^\"]+)\"");  //regex to extract words
+        Matcher dm =l.matcher(jsonLine); //parameter - line of text
+        String dt = lm.find() ? lm.group(1) : ""; //extract the destined part
+
+
+         Pattern a = Pattern.compile("\"authors\":\\s*\"([^\"]+)\"");  //regex to extract words
+        Matcher am =l.matcher(jsonLine); //parameter - line of text
+        String at = lm.find() ? lm.group(1) : ""; //extract the destined part
+
+         Pattern t = Pattern.compile("\"date\":\\s*\"([^\"]+)\"");  //regex to extract words
+        Matcher tm =l.matcher(jsonLine); //parameter - line of text
+        String tt = lm.find() ? lm.group(1) : ""; //extract the destined part
+
+        
+        result=new Article(lt, ht, ct, dt, at, tt);
+
+    return result;
+}
+
+ 
+    public String removeStopWords(String text){
+        
+        String result="";
         String[] words = text.split("\\s+");
-        StringBuilder cleanedText = new StringBuilder();
-        
         for (String word : words) {
-            String wordLower = word.toLowerCase().replaceAll("[^a-zA-Z]", "");
-            if (!stopWords.contains(wordLower) && !wordLower.isEmpty()) {
-                if (cleanedText.length() > 0) {
-                    cleanedText.append(" ");
-                }
-                cleanedText.append(word);
+            if (!stopWords.contains(word)) {
+                result += word + " ";
             }
         }
-        
-        result = cleanedText.toString();
-        return result;
-    }
+        return result.trim();
+    } //remove stop words from Description
+
+
 }
